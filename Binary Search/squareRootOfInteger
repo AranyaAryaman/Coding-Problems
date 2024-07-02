@@ -1,0 +1,45 @@
+/*
+Problem Description
+ 
+ 
+
+Given an integer A.
+
+Compute and return the square root of A.
+
+If A is not a perfect square, return floor(sqrt(A)).
+
+DO NOT USE SQRT FUNCTION FROM STANDARD LIBRARY.
+
+NOTE: Do not use sort function from standard library. Users are expected to solve this in O(log(A)) time.
+
+
+
+Problem Constraints
+0 <= A <= INTMAX
+
+
+Input Format
+The first and only argument given is the integer A.
+
+
+
+Output Format
+Return floor(sqrt(A))
+*/
+double ans(double A, double n) {
+    return abs(A - n) < 0.001;
+}
+
+double better(double A, double n) {
+    return (n + A / n) / 2;
+}
+
+double sol(double A, double n) {
+    if (ans(A/n, n)) return n;
+    return sol(A, better(A, n));
+}
+
+int Solution::sqrt(int A) {
+    return (int)sol(A, 1); 
+}
