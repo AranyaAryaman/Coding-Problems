@@ -61,3 +61,24 @@ vector<int> Solution::searchRange(const vector<int> &A, int B) {
     }
     return ans;
 }
+
+/* ALTERNATE SOLUTION REVIEW THIS AGAIN
+int search(const vector<int> &A, int B, bool first) {
+    int low = 0, high = A.size()-1, ans = -1;
+    while(low <= high) {
+        int mid = (low+high)/2;
+        if(A[mid]==B) { ans = mid; if(first) high=mid-1; else low = mid+1; }
+        else if(A[mid] < B) low = mid+1;
+        else high = mid-1;
+    }
+    return ans;
+}
+vector<int> Solution::searchRange(const vector<int> &A, int B) {
+    vector<int> result(2);
+    result[0] = search(A, B, true);
+    result[1] = search(A, B, false);
+    return result;
+}
+*/
+
+
