@@ -145,6 +145,28 @@ class Graph{
                 cout<<"Size of the component starting at node: "<<it.first<<" is "<<exploreSizeBFS(it.first)<<endl;
             }
         }
+
+        int shortestPath(char src, char dst){
+            clearVisitedSet();
+            queue<pair<char,int> > bfsQueue;
+            bfsQueue.push(make_pair(src,0));
+            visitedSet.insert(src);
+            while(!bfsQueue.empty()){
+                pair<char,int> frontNode = bfsQueue.front();
+                bfsQueue.pop();
+                if(frontNode.first==dst)
+                    return frontNode.second;
+                else{
+                    for(auto neighbor: adjList[frontNode.first]){
+                        if(visitedSet.find(neighbor)==visitedSet.end()){
+                            visitedSet.insert(neighbor);
+                            bfsQueue.push(make_pair(neighbor,frontNode.second+1));
+                        }
+                    }
+                }
+            }
+            return -1;
+        }
 };
 
 int main(){
@@ -179,4 +201,12 @@ int main(){
     cout<<"Largest Component in this graph: "<<g.largestComponent()<<endl;
     cout<<"Component Sizes\n";
     g.componentSizeBFS();
+    Graph g1;
+    g1.addEdge('x','y');
+    g1.addEdge('y','z');
+    g1.addEdge('x','a');
+    g1.addEdge('a','b');
+    g1.addEdge('b','z');
+    cout<<"Shortest Path between x and z has distance: "<<g1.shortestPath('x','z')<<endl;
+
 }
