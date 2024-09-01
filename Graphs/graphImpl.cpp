@@ -5,6 +5,7 @@
 #include<list>
 #include<set>
 #include<queue>
+#include<cmath>
 
 using namespace std;
 
@@ -76,6 +77,74 @@ class Graph{
             cout<<"All set elements printed"<<endl;
             clearVisitedSet();
         }
+
+        bool explore(char node){
+            if(visitedSet.find(node)!=visitedSet.end())
+                return false;
+            visitedSet.insert(node);
+            for(auto neighbor: adjList[node]){
+                bool rand = explore(neighbor);
+            }
+            return true;
+        }
+
+        int connectedComponents(){
+            int count = 0;
+            clearVisitedSet();
+            for(auto it: adjList){
+                if(explore(it.first))
+                    count++;
+            }
+            return count;
+        }
+        
+        int exploreSize(char node){
+            if(visitedSet.find(node)!=visitedSet.end())
+                return 0;
+            visitedSet.insert(node);
+            int size = 1;
+            for(auto neighbor: adjList[node]){
+                size += exploreSize(neighbor);
+            }
+            //cout<<node<<" "<<size;
+            return size;
+        }
+
+        int largestComponent(){
+            clearVisitedSet();
+            int largest = 0;
+            for(auto it: adjList){
+                //cout<<it.first<<endl;
+                largest = max(exploreSize(it.first),largest);
+            }
+            return largest;
+        }
+
+        int exploreSizeBFS(char node){
+            queue<char> bfsQueue;
+            int size = 1;
+            bfsQueue.push(node);
+            visitedSet.insert(node);
+            while(!bfsQueue.empty()){
+                char ch = bfsQueue.front();
+                bfsQueue.pop();
+                for(auto neighbor: adjList[ch]){
+                    if(visitedSet.find(neighbor)==visitedSet.end()){
+                        size++;
+                        bfsQueue.push(neighbor);
+                        visitedSet.insert(neighbor);
+                    }
+                }
+            }
+            return size;
+        }
+
+        void componentSizeBFS(){
+            for(auto it:adjList){
+                clearVisitedSet();
+                cout<<"Size of the component starting at node: "<<it.first<<" is "<<exploreSizeBFS(it.first)<<endl;
+            }
+        }
 };
 
 int main(){
@@ -106,4 +175,8 @@ int main(){
     else
         cout<<"Works \n";
     g.printVisitedSet();
+    cout<<"Connected Components of this graph: "<<g.connectedComponents()<<endl;
+    cout<<"Largest Component in this graph: "<<g.largestComponent()<<endl;
+    cout<<"Component Sizes\n";
+    g.componentSizeBFS();
 }
