@@ -59,39 +59,58 @@ You fill in A[0] = 1 unit of additional gas, making your current gas = 2. It cos
 
 */
 
-int Solution::canCompleteCircuit(const vector<int> &gas, const vector<int> &cost) {
-    // if(A.size()==1)
-    //     return A[0]>=B[0]?0:-1;
-    // int n = A.size();
-    // int curr_fuel = 0;
-    // int curr_count = 0;
-    // for(int i=0;i<n;i++){
-    //     curr_fuel = A[i]-B[i];
-    //     curr_count = 1;
-    //     int j = i+1;
-    //     //cout<<i<<": ";
-    //     while(curr_fuel>=0 && j!=i){
-    //         curr_fuel += A[j%n] - B[j%n];
-    //         //cout<<j<<" "<<curr_fuel<<endl;
-    //         if(curr_fuel>0){
-    //             curr_count++;
-    //             j = (j+1)%n;
-    //         }   
-    //     }
-    //     if(j==i || curr_count==n)
-    //         return i;
-    // }
-    // return -1;
-    int n=gas.size();
-    int total=0,surplus=0,idx=0;
-    for(int i=0;i<n;i++){
-        total+=gas[i]-cost[i];
-        surplus+=gas[i]-cost[i];
-        if(surplus<0){
-            idx=i+1;
-            surplus=0;
+// int Solution::canCompleteCircuit(const vector<int> &gas, const vector<int> &cost) {
+//     // if(A.size()==1)
+//     //     return A[0]>=B[0]?0:-1;
+//     // int n = A.size();
+//     // int curr_fuel = 0;
+//     // int curr_count = 0;
+//     // for(int i=0;i<n;i++){
+//     //     curr_fuel = A[i]-B[i];
+//     //     curr_count = 1;
+//     //     int j = i+1;
+//     //     //cout<<i<<": ";
+//     //     while(curr_fuel>=0 && j!=i){
+//     //         curr_fuel += A[j%n] - B[j%n];
+//     //         //cout<<j<<" "<<curr_fuel<<endl;
+//     //         if(curr_fuel>0){
+//     //             curr_count++;
+//     //             j = (j+1)%n;
+//     //         }   
+//     //     }
+//     //     if(j==i || curr_count==n)
+//     //         return i;
+//     // }
+//     // return -1;
+//     int n=gas.size();
+//     int total=0,surplus=0,idx=0;
+//     for(int i=0;i<n;i++){
+//         total+=gas[i]-cost[i];
+//         surplus+=gas[i]-cost[i];
+//         if(surplus<0){
+//             idx=i+1;
+//             surplus=0;
+//         }
+//     }
+//     return (total>=0) ? idx:-1;
+    
+// }
+
+int Solution::canCompleteCircuit(const vector<int> &A, const vector<int> &B) {
+    vector<int> gas(2*A.size()),cost(2*A.size());
+    for(int i=0;i<gas.size();i++){
+        gas[i]=A[i%A.size()];
+        cost[i]=B[i%A.size()];        
+    }
+    int start = 0, curr=0;
+    for(int i=0;i<gas.size();i++){
+        if(i==start+A.size())
+            return start;
+        curr+=gas[i]-cost[i];
+        if(curr<0){
+            curr=0;
+            start=i+1;
         }
     }
-    return (total>=0) ? idx:-1;
-    
+    return -1;
 }
