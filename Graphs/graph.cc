@@ -4,53 +4,92 @@
 
 using namespace std;
 
+class Node
+{
+private:
+    int num;
+    int start;
+    int finish;
+    int color;
+
+public:
+    Node(int num)
+    {
+        this->num = num;
+        this->color = -1; // -1 for white, 0 for gray, 1 for black
+    }
+
+    int getNum() const
+    {
+        return num;
+    }
+
+    void setColor(int x)
+    {
+        color = x;
+    }
+
+    int getColor() const
+    {
+        return color;
+    }
+
+    bool operator==(const Node &other) const
+    {
+        return num == other.num;
+    }
+
+    bool operator!=(const Node &other) const
+    {
+        return !(*this == other);
+    }
+};
+
+namespace std
+{
+    template <>
+    struct hash<Node>
+    {
+        size_t operator()(const Node &n) const
+        {
+            return hash<int>()(n.getNum());
+        }
+    };
+}
+
 class Graph
 {
 private:
     int vertex;
     unordered_map<int, vector<pair<int, int> > > adjList;
     unordered_map<int, bool> visited;
+    unordered_map<int, int> componentVal;
+    int compNum = 0;
 
 public:
-    void setVertices(int x)
+    Graph(int Vertex, int CompNum)
     {
-        vertex = x;
+        this->vertex = Vertex;
+        this->compNum = CompNum;
     }
 
-    int getVertices()
+    void addEdge(int u, int v, int dist = 1)
     {
-        return vertex;
-    }
-
-    void addEdge(int u, int v, int dist)
-    {
-        if (adjList.size() > vertex)
-        {
-            cout << "Crossed maximum number of vertices\n";
-        }
-        else
-        {
-            adjList[u].push_back(make_pair(v, dist));
-            visited[u] = false;
-        }
+        adjList[u].push_back(make_pair(v, dist));
+        visited[u] = false;
     }
 
     void printAdjList()
     {
-        for (auto node : adjList)
+        for (const auto &node : adjList)
         {
-            cout << node.first << "->";
-            for (int i = 0; i < adjList[node.first].size(); i++)
+            cout << node.first << " -> ";
+            for (const auto &neighbor : node.second)
             {
-                cout << node.second.at(i).first << "-";
+                cout << neighbor.first << " ";
             }
             cout << endl;
         }
-    }
-
-    void clearVisited()
-    {
-        visited.clear();
     }
 
     void dfsVisit(int x)
@@ -59,9 +98,9 @@ public:
             return;
         else
         {
-            cout << x << " ";
+            componentVal[x] = compNum;
             visited[x] = true;
-            for (auto neighbor : adjList[x])
+            for (auto &neighbor : adjList[x])
             {
                 dfsVisit(neighbor.first);
             }
@@ -70,29 +109,46 @@ public:
 
     void dfs()
     {
-        for (auto node : adjList)
+        for (auto &node : adjList)
         {
-            if (visited[node.first] == false)
+            if (visited[node.first]==false) // if white (unvisited)
             {
+                // node.first.setColor(0); // mark as gray (visiting)
+                compNum++;
+                componentVal[node.first] = compNum;
                 visited[node.first] = true;
-                for (auto neighbor : node.second)
-                {
-                    dfsVisit(neighbor.first);
-                }
+                dfsVisit(node.first);
+                // node.first.setColor(1); // mark as black (visited)
             }
         }
+    }
+
+    void printComponentNumber()
+    {
+        for (const auto &node : adjList)
+        {
+            cout << "Node: " << node.first << " Component: " << componentVal[node.first] << endl;
+        }
+    }
+
+    int countComponents()
+    {
+        dfs();
+        return compNum;
     }
 };
 
 int main()
 {
-    Graph g;
-    g.setVertices(5);
-    g.addEdge(1, 2, 1);
-    g.addEdge(2, 5, 1);
-    g.addEdge(3, 5, 1);
-    g.addEdge(3, 4, 1);
-    g.addEdge(5, 1, 1);
+    Graph g(5, 0);
+    g.addEdge(1,2);
+    g.addEdge(2,5);
+    g.addEdge(3,4);
+    g.addEdge(5,1);
+    cout<<g.countComponents()<<endl;
     g.printAdjList();
-    g.dfs();
+    cout << "Number of Components: " << g.countComponents() << endl;
+    g.printComponentNumber();
+
+    return 0;
 }
