@@ -13,6 +13,7 @@ private:
     int finish;
     int color;
     int parent;
+    int distance;
 
 public:
     Node(int num)
@@ -20,6 +21,15 @@ public:
         this->num = num;
         this->color = -1; // -1 for white, 0 for gray, 1 for black
         this->parent = -1; // NIL
+        this->distance = INT_MAX;
+    }
+
+    int getDistance() const{
+        return distance;
+    }
+
+    void setDistance(int x){
+        distance = x;
     }
 
     int getNum() const
@@ -195,19 +205,23 @@ public:
 
     void bfs(int root){
         clearColors();
-        queue<Node> bfsQueue;
+        queue<pair<Node, int> > bfsQueue;
         nodes[root-1].setColor(0);
-        bfsQueue.push(nodes[root-1]);
+        nodes[root-1].setDistance(0);
+        bfsQueue.push(make_pair(nodes[root-1],0));
         while(!bfsQueue.empty()){
-            Node st = bfsQueue.front();
-            cout<<st.getNum();
-            nodes[st.getNum()-1].setColor(1);
+            pair<Node,int> st = bfsQueue.front();
+            // cout<<st.first.getNum();
+            int dist = st.second;
+            nodes[st.first.getNum()-1].setDistance(min(dist,nodes[st.first.getNum()-1].getDistance()));
+            nodes[st.first.getNum()-1].setColor(1);
             bfsQueue.pop();
-            for(int i=0; i< adjList[st.getNum()].size();i++){
-                if(nodes[adjList[st.getNum()][i].first-1].getColor()==-1){
-                    nodes[adjList[st.getNum()][i].first-1].setColor(0);
-                    nodes[adjList[st.getNum()][i].first-1].setParent(st.getNum());
-                    bfsQueue.push(nodes[adjList[st.getNum()][i].first-1]);
+            for(int i=0; i< adjList[st.first.getNum()].size();i++){
+                if(nodes[adjList[st.first.getNum()][i].first-1].getColor()==-1){
+                    nodes[adjList[st.first.getNum()][i].first-1].setColor(0);
+                    nodes[adjList[st.first.getNum()][i].first-1].setParent(st.first.getNum());
+                    // nodes[adjList[st.first.getNum()][i].first-1].setDistance(dist+1);
+                    bfsQueue.push(make_pair(nodes[adjList[st.first.getNum()][i].first-1],nodes[st.first.getNum()-1].getDistance()+1));
                 }
             } 
         }
@@ -217,7 +231,7 @@ public:
         bfs(1);
         for(int i=0;i<nodes.size();i++){
             if(nodes[i].getColor()!=-1){
-                cout<<"Node: "<<nodes[i].getNum()<<" Color: "<<nodes[i].getColor()<<" Parent: "<<nodes[i].getParent()<<endl;
+                cout<<"Node: "<<nodes[i].getNum()<<" Color: "<<nodes[i].getColor()<<" Parent: "<<nodes[i].getParent()<<" Distance :"<<nodes[i].getDistance()<<endl;
             }
         }
     }
@@ -248,9 +262,11 @@ int main()
 {
     Graph g(5, 0);
     g.addEdge(1,2);
+    // g.addEdge(1,5);
     g.addEdge(2,5);
     g.addEdge(3,4);
-    g.addEdge(5,1);
+    g.addEdge(5,3);
+    g.addEdge(5,4);
     // // cout<<g.countComponents()<<endl;
     g.printAdjList();
     // //cout << "Number of Components: " << g.countComponents() << endl;
