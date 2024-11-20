@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <unordered_map>
+#include <queue>
 
 using namespace std;
 
@@ -160,6 +161,7 @@ public:
 
     void dfs()
     {
+        clearColors();
         cur_time = 0;
         for(int i=0;i<nodes.size();i++){
             if(nodes[i].getColor()==-1)
@@ -180,6 +182,44 @@ public:
         //         nodes[node.first-1].setColor(1);
         //     }
         // }
+    }
+
+    void clearColors(){
+        for(int i=0;i<nodes.size();i++){
+            nodes[i].setColor(-1);
+            nodes[i].setStart(0);
+            nodes[i].setFinish(0);
+            nodes[i].setParent(-1);
+        }
+    }
+
+    void bfs(int root){
+        clearColors();
+        queue<Node> bfsQueue;
+        nodes[root-1].setColor(0);
+        bfsQueue.push(nodes[root-1]);
+        while(!bfsQueue.empty()){
+            Node st = bfsQueue.front();
+            cout<<st.getNum();
+            nodes[st.getNum()-1].setColor(1);
+            bfsQueue.pop();
+            for(int i=0; i< adjList[st.getNum()].size();i++){
+                if(nodes[adjList[st.getNum()][i].first-1].getColor()==-1){
+                    nodes[adjList[st.getNum()][i].first-1].setColor(0);
+                    nodes[adjList[st.getNum()][i].first-1].setParent(st.getNum());
+                    bfsQueue.push(nodes[adjList[st.getNum()][i].first-1]);
+                }
+            } 
+        }
+    }
+
+    void printBFS(){
+        bfs(1);
+        for(int i=0;i<nodes.size();i++){
+            if(nodes[i].getColor()!=-1){
+                cout<<"Node: "<<nodes[i].getNum()<<" Color: "<<nodes[i].getColor()<<" Parent: "<<nodes[i].getParent()<<endl;
+            }
+        }
     }
 
     void printComponentNumber()
@@ -215,6 +255,7 @@ int main()
     g.printAdjList();
     // //cout << "Number of Components: " << g.countComponents() << endl;
     // g.printComponentNumber();
-    g.printNodesDFS();
+    // g.printNodesDFS();
+    g.printBFS();
     return 0;
 }
