@@ -2,6 +2,7 @@
 #include <vector>
 #include <unordered_map>
 #include <queue>
+#include <stack>
 
 using namespace std;
 
@@ -105,7 +106,6 @@ private:
     unordered_map<int, int> componentVal;
     vector<Node> nodes;
     int compNum = 0;
-    ;
 
 public:
     Graph(int Vertex, int CompNum)
@@ -228,7 +228,7 @@ public:
     }
 
     void printBFS(){
-        bfs(1);
+        bfs(2);
         for(int i=0;i<nodes.size();i++){
             if(nodes[i].getColor()!=-1){
                 cout<<"Node: "<<nodes[i].getNum()<<" Color: "<<nodes[i].getColor()<<" Parent: "<<nodes[i].getParent()<<" Distance :"<<nodes[i].getDistance()<<endl;
@@ -256,6 +256,21 @@ public:
             cout<<"Node:"<<nodes[i].getNum()<<" Start:"<<nodes[i].getStart()<<" Finish:"<<nodes[i].getFinish()<<" Color:"<<nodes[i].getColor()<<endl;
         }
     }
+
+    void printPath(int x){
+        cout<<"Path: ";
+        stack<int> st;
+        st.push(x);
+        while(nodes[x-1].getParent()!=-1){
+            st.push(nodes[x-1].getParent());
+            x = nodes[x-1].getParent();
+        }
+        while(!st.empty()){
+            cout<<st.top()<<" ";
+            st.pop();
+        }
+        cout<<endl;
+    }
 };
 
 int main()
@@ -267,11 +282,13 @@ int main()
     g.addEdge(3,4);
     g.addEdge(5,3);
     g.addEdge(5,4);
+    g.addEdge(4,1);
     // // cout<<g.countComponents()<<endl;
     g.printAdjList();
     // //cout << "Number of Components: " << g.countComponents() << endl;
     // g.printComponentNumber();
     // g.printNodesDFS();
     g.printBFS();
+    g.printPath(1);
     return 0;
 }
