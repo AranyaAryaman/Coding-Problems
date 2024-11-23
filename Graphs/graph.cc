@@ -107,6 +107,8 @@ private:
     vector<Node> nodes;
     int compNum = 0;
     stack<int> tsort;
+    vector<int> sorted;
+    vector<int> shortDist;
 
 public:
     Graph(int Vertex, int CompNum)
@@ -275,8 +277,15 @@ public:
         cout<<endl;
     }
 
+    void initializeShortestDistance(){
+        for(int i=0;i<sorted.size();i++){
+            shortDist.push_back(INT_MAX);
+        }
+        //cout<<"ending";
+    }
+
     void topsort(){
-        vector<int> sorted;
+        dfs();
         while(!tsort.empty()){
             sorted.push_back(tsort.top());
             tsort.pop();
@@ -286,6 +295,34 @@ public:
             cout<<sorted[i]<<" ";
         }
         cout<<endl;
+    }
+
+    void printShortestDistances(int a){
+        cout<<"Shortest Distance of Nodes starting from: "<<a<<endl;
+        for(int i=0;i<shortDist.size();i++){
+            cout<<"Node: "<<i+1<<" Distance: "<<shortDist[i]<<"\n";
+        }
+        cout<<endl;
+    }
+
+    void dijkstra(int a){
+        topsort();
+        initializeShortestDistance();
+        shortDist[a-1]=0;
+        //cout<<"Here2\n";
+        for(int i=0;i<sorted.size();i++){
+            //cout<<"Here1\n";
+            int x = sorted[i];
+            for(auto neighbor: adjList[x]){
+                //cout<<"Here\n";
+                int newDist = shortDist[x-1]+neighbor.second;
+                if(shortDist[neighbor.first-1]!=INT_MAX)
+                    shortDist[neighbor.first-1] = min(shortDist[neighbor.first-1],newDist);
+                else
+                    shortDist[neighbor.first-1] = newDist;
+            }
+        }
+        printShortestDistances(a);
     }
 };
 
@@ -318,7 +355,17 @@ int main()
     g2.addEdge(6, 7);
     g2.addEdge(3, 6);
     g2.printAdjList();
-    g2.printNodesDFS();
-    g2.topsort();
+    //g2.printNodesDFS();
+    //g2.topsort();
+
+    Graph g3(5,0);
+    g3.addEdge(1,2,2);
+    g3.addEdge(1,5,5);
+    g3.addEdge(1,3,2);
+    g3.addEdge(3,4,4);
+    g3.addEdge(4,5,1);
+    g3.addEdge(2,5,3);
+    g3.addEdge(2,4,1);
+    g3.dijkstra(1);
     return 0;
 }
