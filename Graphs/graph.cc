@@ -106,6 +106,7 @@ private:
     unordered_map<int, int> componentVal;
     vector<Node> nodes;
     int compNum = 0;
+    stack<int> tsort;
 
 public:
     Graph(int Vertex, int CompNum)
@@ -150,6 +151,8 @@ public:
         x.setColor(1);
         cur_time++;
         x.setFinish(cur_time);
+        tsort.push(x.getNum());
+
 
         // if (nodes[x-1].getColor()!=-1)
         //     return;
@@ -271,6 +274,19 @@ public:
         }
         cout<<endl;
     }
+
+    void topsort(){
+        vector<int> sorted;
+        while(!tsort.empty()){
+            sorted.push_back(tsort.top());
+            tsort.pop();
+        }
+        cout<<endl<<"Topological Order"<<endl;
+        for(int i = 0; i< sorted.size();i++){
+            cout<<sorted[i]<<" ";
+        }
+        cout<<endl;
+    }
 };
 
 int main()
@@ -290,5 +306,19 @@ int main()
     // g.printNodesDFS();
     g.printBFS();
     g.printPath(1);
+    Graph g2(7, 0);
+    g2.addEdge(1, 2);
+    g2.addEdge(1, 3);
+    g2.addEdge(2, 4);
+    g2.addEdge(3, 4);
+    g2.addEdge(4, 5);
+    g2.addEdge(4, 6);
+    g2.addEdge(2, 6);
+    g2.addEdge(5, 7);
+    g2.addEdge(6, 7);
+    g2.addEdge(3, 6);
+    g2.printAdjList();
+    g2.printNodesDFS();
+    g2.topsort();
     return 0;
 }
